@@ -1,0 +1,178 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+@theme {
+  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", "SF Mono", monospace;
+
+  /* Semantic game colors */
+  --color-live: #ff3b3b;
+  --color-win: #00d26a;
+  --color-upcoming: #ffb800;
+
+  /* Legacy compat */
+  --color-bg: #06060a;
+  --color-bg-card: #111119;
+  --color-bg-elevated: #1a1a24;
+  --color-bg-hover: #252533;
+  --color-border-subtle: #2a2a3a;
+  --color-text: #eeeef0;
+  --color-text-muted: #9d9db5;
+  --color-text-dim: #5c5c76;
+}
+
+:root {
+  --radius: 0.5rem;
+
+  --background: #06060a;
+  --foreground: #eeeef0;
+  --card: #111119;
+  --card-foreground: #eeeef0;
+  --popover: #0f0f15;
+  --popover-foreground: #eeeef0;
+  --primary: #6c5ce7;
+  --primary-foreground: #ffffff;
+  --secondary: #16161e;
+  --secondary-foreground: #eeeef0;
+  --muted: #16161e;
+  --muted-foreground: #9d9db5;
+  --accent: #16161e;
+  --accent-foreground: #eeeef0;
+  --destructive: #ff3b3b;
+  --border: #2a2a3a;
+  --input: #16161e;
+  --ring: #6c5ce7;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #252533;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #5c5c76;
+}
+
+/* Animations */
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-pulse-live {
+  animation: pulse-live 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 8px var(--glow-color, rgba(108, 92, 231, 0.3)); }
+  50% { box-shadow: 0 0 20px var(--glow-color, rgba(108, 92, 231, 0.5)); }
+}
+
+/* Section panel */
+.panel {
+  background: var(--card);
+  border: 1px solid #40405a;
+  border-radius: 0.625rem;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+}
+.panel-inner {
+  background: linear-gradient(180deg, rgba(255,255,255,0.015) 0%, transparent 100%);
+  border-radius: inherit;
+}
+
+/* Page main — responsive padding */
+.page-main {
+  --page-px: 1.5rem;
+  padding: 2.5rem var(--page-px);
+}
+@media (min-width: 768px) {
+  .page-main {
+    --page-px: 2.5rem;
+    padding: 3.5rem var(--page-px);
+  }
+}
+@media (min-width: 1536px) {
+  .page-main {
+    --page-px: 4rem;
+    padding: 3.5rem var(--page-px);
+  }
+}
+
+/* Section band — full-bleed alternating background */
+.section-band {
+  margin-inline: calc(-1 * var(--page-px));
+  padding-inline: var(--page-px);
+  padding-block: 2.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Subtle noise texture on body */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+  background-size: 64px 64px;
+  pointer-events: none;
+  z-index: 0;
+}
+body > * {
+  position: relative;
+  z-index: 1;
+}
