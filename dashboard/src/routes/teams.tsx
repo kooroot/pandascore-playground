@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { api, type Team } from "@/lib/api";
 import { Loader, ErrorDisplay } from "@/components/Loader";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search } from "lucide-react";
-import { useState } from "react";
+import { Search, Users } from "lucide-react";
+import { useState, useDeferredValue } from "react";
 
 export const Route = createFileRoute("/teams")({
   component: TeamsPage,
@@ -12,12 +12,25 @@ export const Route = createFileRoute("/teams")({
 
 function TeamsPage() {
   const [search, setSearch] = useState("");
+  const deferredSearch = useDeferredValue(search);
 
-  const teams = useQuery({
-    queryKey: ["teams", search],
-    queryFn: () =>
-      api.getTeams(search ? { "filter[name]": search } : undefined),
+  // Fetch active teams (from recent/upcoming matches) when no search
+  const activeTeams = useQuery({
+    queryKey: ["teams", "active"],
+    queryFn: api.getActiveTeams,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  // Fetch search results when searching
+  const searchResults = useQuery({
+    queryKey: ["teams", "search", deferredSearch],
+    queryFn: () => api.searchTeams(deferredSearch),
+    enabled: deferredSearch.length > 0,
+  });
+
+  const isSearching = deferredSearch.length > 0;
+  const teams = isSearching ? searchResults : activeTeams;
+  const teamList = (teams.data ?? []) as Team[];
 
   return (
     <div className="space-y-8">
@@ -27,17 +40,26 @@ function TeamsPage() {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-lg">
-        <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-text-dim">
-          <Search size={18} />
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="relative max-w-lg flex-1">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-text-dim">
+            <Search size={18} />
+          </div>
+          <input
+            type="text"
+            placeholder="팀 이름 검색 (예: T1, Gen.G, DRX...)"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-xl border border-border-subtle bg-bg-card/50 backdrop-blur-sm py-3.5 pl-12 pr-4 text-sm text-text placeholder:text-text-dim/50 outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/20 shadow-sm"
+          />
         </div>
-        <input
-          type="text"
-          placeholder="Search by team name..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-xl border border-border-subtle bg-bg-card/50 backdrop-blur-sm py-3.5 pl-12 pr-4 text-sm text-text placeholder:text-text-dim/50 outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/20 shadow-sm"
-        />
+
+        {!isSearching && (
+          <div className="flex items-center gap-2 text-xs text-text-dim">
+            <Users size={14} />
+            <span>현재 활성 팀 {teamList.length}개 표시 중</span>
+          </div>
+        )}
       </div>
 
       {teams.isLoading ? (
@@ -46,7 +68,7 @@ function TeamsPage() {
         <ErrorDisplay message="팀 정보를 불러올 수 없습니다" />
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
-          {(teams.data ?? []).map((team) => (
+          {teamList.map((team) => (
             <Card
               key={team.id}
               className="group items-center transition-all hover:-translate-y-1 hover:border-primary/50"
@@ -82,7 +104,7 @@ function TeamsPage() {
               </CardContent>
             </Card>
           ))}
-          {(teams.data ?? []).length === 0 && (
+          {teamList.length === 0 && (
             <div className="col-span-full rounded-xl border border-dashed border-border-subtle bg-bg-card/30 p-16 text-center text-text-dim">
               {search ? `"${search}" 검색 결과가 없습니다` : "팀 정보가 없습니다"}
             </div>

@@ -140,4 +140,34 @@ export const api = {
       "page[size]": "50",
       ...params,
     }),
+
+  searchTeams: (query: string) =>
+    fetchApi<Team[]>("/lol/teams", {
+      "page[size]": "50",
+      "search[name]": query,
+    }),
+
+  // Get active teams by extracting from recent/upcoming matches
+  getActiveTeams: async (): Promise<Team[]> => {
+    const [running, upcoming, past] = await Promise.all([
+      fetchApi<Match[]>("/lol/matches/running"),
+      fetchApi<Match[]>("/lol/matches/upcoming", { "page[size]": "50" }),
+      fetchApi<Match[]>("/lol/matches/past", { "page[size]": "50" }),
+    ]);
+
+    const allMatches = [...running, ...upcoming, ...past];
+    const teamsMap = new Map<number, Team>();
+
+    for (const match of allMatches) {
+      for (const { opponent } of match.opponents) {
+        if (opponent && !teamsMap.has(opponent.id)) {
+          teamsMap.set(opponent.id, opponent);
+        }
+      }
+    }
+
+    return Array.from(teamsMap.values()).sort((a, b) =>
+      (a.name ?? "").localeCompare(b.name ?? "")
+    );
+  },
 };
