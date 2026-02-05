@@ -5,7 +5,7 @@ import { LiveMatchCard } from "@/components/LiveMatchCard";
 import { CompactMatchItem } from "@/components/CompactMatchItem";
 import { StatCard } from "@/components/StatCard";
 import { Loader, ErrorDisplay } from "@/components/Loader";
-import { Zap, Calendar, Trophy, TrendingUp, ArrowRight } from "lucide-react";
+import { Zap, Calendar, Trophy, TrendingUp, ArrowRight, Radio } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: DashboardPage,
@@ -46,17 +46,17 @@ function DashboardPage() {
   return (
     <div className="space-y-0">
       {/* Header */}
-      <div className="pb-10">
-        <h1 className="text-3xl font-bold tracking-tight">
+      <div className="pb-8 animate-fade-in-up">
+        <h1 className="text-4xl font-bold tracking-tight gradient-text">
           Esports Dashboard
         </h1>
-        <p className="mt-1.5 text-sm text-muted-foreground">
+        <p className="mt-2 text-sm text-muted-foreground max-w-md">
           실시간 스코어와 프로 경기 일정을 한눈에 확인하세요.
         </p>
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
         <StatCard
           label="라이브"
           value={liveMatches.length}
@@ -84,18 +84,13 @@ function DashboardPage() {
       </div>
 
       {/* Live Matches — full-bleed background band */}
-      <div className="section-band mt-10">
+      <div className="section-band mt-8 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
         {liveMatches.length > 0 ? (
           <section className="space-y-5">
-            <div className="flex items-center gap-2.5">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-live opacity-75" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-live" />
-              </span>
-              <h2 className="text-lg font-bold">Live Matches</h2>
-              <span className="rounded-full bg-live/15 px-2.5 py-0.5 text-[10px] font-bold text-live">
-                {liveMatches.length}
-              </span>
+            <div className="flex items-center gap-3">
+              <div className="live-dot" />
+              <h2 className="text-xl font-bold">Live Matches</h2>
+              <span className="live-badge">{liveMatches.length}</span>
             </div>
             <div className={`grid gap-5 ${liveMatches.length === 1 ? "max-w-lg" : "sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"}`}>
               {liveMatches.map((m) => (
@@ -104,8 +99,10 @@ function DashboardPage() {
             </div>
           </section>
         ) : (
-          <div className="flex flex-col items-center justify-center py-10 text-center">
-            <Zap size={24} className="mb-3 text-muted-foreground/40" />
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary mb-4">
+              <Radio size={28} className="text-muted-foreground/40" />
+            </div>
             <p className="text-sm font-medium text-muted-foreground">
               현재 진행 중인 경기가 없습니다
             </p>
@@ -117,23 +114,23 @@ function DashboardPage() {
       </div>
 
       {/* Upcoming + Recent side by side */}
-      <div className="grid gap-8 pt-10 xl:grid-cols-2">
+      <div className="grid gap-6 pt-8 xl:grid-cols-2 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
         {/* Upcoming */}
         <section className="panel overflow-hidden">
           <div className="panel-inner">
-            <div className="flex items-center justify-between border-b border-[#40405a] px-6 py-4">
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <h2 className="flex items-center gap-2.5 text-sm font-bold uppercase tracking-wider">
-                <Calendar size={16} className="text-upcoming" />
+                <Calendar size={16} className="text-amber-400" />
                 예정된 경기
               </h2>
               <Link
                 to="/matches"
-                className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-primary"
+                className="btn-secondary !py-1.5 !px-3 !text-xs"
               >
                 전체 보기 <ArrowRight size={12} />
               </Link>
             </div>
-            <div className="flex flex-col gap-3 p-5">
+            <div className="flex flex-col gap-2.5 p-4">
               {upcomingMatches.map((m) => (
                 <CompactMatchItem key={m.id} match={m} />
               ))}
@@ -149,19 +146,19 @@ function DashboardPage() {
         {/* Recent */}
         <section className="panel overflow-hidden">
           <div className="panel-inner">
-            <div className="flex items-center justify-between border-b border-[#40405a] px-6 py-4">
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <h2 className="flex items-center gap-2.5 text-sm font-bold uppercase tracking-wider">
-                <TrendingUp size={16} className="text-win" />
+                <TrendingUp size={16} className="text-emerald-400" />
                 최근 결과
               </h2>
               <Link
                 to="/matches"
-                className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-primary"
+                className="btn-secondary !py-1.5 !px-3 !text-xs"
               >
                 전체 보기 <ArrowRight size={12} />
               </Link>
             </div>
-            <div className="flex flex-col gap-3 p-5">
+            <div className="flex flex-col gap-2.5 p-4">
               {pastMatches.map((m) => (
                 <CompactMatchItem key={m.id} match={m} />
               ))}

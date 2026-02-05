@@ -15,28 +15,24 @@ export function CompactMatchItem({ match }: { match: Match }) {
   const dateStr = match.scheduled_at || match.begin_at;
 
   return (
-    <div className="group flex items-center gap-4 rounded-lg border border-[#333346] bg-[#12121a] px-5 py-4 transition-all hover:border-[#444460] hover:bg-[#181824]">
+    <div className="match-row group">
       {/* Date */}
-      <span className="w-[78px] shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground">
+      <span className="w-[80px] shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground">
         {formatShortDate(dateStr)}
       </span>
 
       {/* Status */}
       <span
         className={cn(
-          "w-12 shrink-0 rounded-md px-1.5 py-0.5 text-center font-mono text-[10px] font-bold uppercase leading-tight",
-          isLive
-            ? "bg-live/15 text-live"
-            : color === "upcoming"
-              ? "bg-upcoming/15 text-upcoming"
-              : "bg-secondary text-muted-foreground",
+          "status-badge w-12 shrink-0 justify-center",
+          isLive ? "live" : color === "upcoming" ? "upcoming" : "finished"
         )}
       >
         {label}
       </span>
 
       {/* League */}
-      <div className="flex w-[120px] shrink-0 items-center gap-2 overflow-hidden">
+      <div className="flex w-[130px] shrink-0 items-center gap-2.5 overflow-hidden">
         {match.league?.image_url ? (
           <img
             src={match.league.image_url}
@@ -46,7 +42,7 @@ export function CompactMatchItem({ match }: { match: Match }) {
         ) : (
           <div className="h-5 w-5 shrink-0 rounded bg-secondary" />
         )}
-        <span className="truncate text-[11px] text-muted-foreground">
+        <span className="truncate text-[11px] font-medium text-muted-foreground">
           {match.league?.name ?? ""}
         </span>
       </div>
@@ -69,7 +65,7 @@ export function CompactMatchItem({ match }: { match: Match }) {
               VS
             </span>
           )}
-          <span className="text-[9px] leading-none text-muted-foreground/40">
+          <span className="text-[9px] leading-none text-muted-foreground/40 mt-0.5">
             BO{match.number_of_games}
           </span>
         </div>
@@ -96,36 +92,38 @@ function TeamBadge({
   return (
     <div
       className={cn(
-        "flex min-w-0 flex-1 items-center gap-2",
-        align === "right" ? "justify-end" : "justify-start",
+        "flex min-w-0 flex-1 items-center gap-2.5",
+        align === "right" ? "justify-end" : "justify-start"
       )}
     >
       {align === "right" && (
         <span
           className={cn(
-            "truncate text-xs font-semibold",
-            highlight ? "text-win" : "text-muted-foreground",
+            "truncate text-xs font-semibold transition-colors",
+            highlight ? "text-emerald-400" : "text-muted-foreground"
           )}
         >
           {team?.acronym ?? "TBD"}
         </span>
       )}
-      {team?.image_url ? (
-        <img
-          src={team.image_url}
-          alt=""
-          className="h-6 w-6 shrink-0 rounded object-contain"
-        />
-      ) : (
-        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-secondary text-[8px] font-bold text-muted-foreground">
-          {team?.acronym?.[0] ?? "?"}
-        </div>
-      )}
+      <div className="team-logo-sm flex items-center justify-center bg-secondary/80 border border-border">
+        {team?.image_url ? (
+          <img
+            src={team.image_url}
+            alt=""
+            className="h-5 w-5 shrink-0 rounded object-contain"
+          />
+        ) : (
+          <span className="text-[9px] font-bold text-muted-foreground">
+            {team?.acronym?.[0] ?? "?"}
+          </span>
+        )}
+      </div>
       {align === "left" && (
         <span
           className={cn(
-            "truncate text-xs font-semibold",
-            highlight ? "text-win" : "text-muted-foreground",
+            "truncate text-xs font-semibold transition-colors",
+            highlight ? "text-emerald-400" : "text-muted-foreground"
           )}
         >
           {team?.acronym ?? "TBD"}
