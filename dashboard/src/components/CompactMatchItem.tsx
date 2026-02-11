@@ -1,4 +1,5 @@
 import type { Match } from "@/lib/api";
+import { Link } from "@tanstack/react-router";
 import { formatShortDate, getMatchStatus, cn } from "@/lib/utils";
 
 export function CompactMatchItem({ match }: { match: Match }) {
@@ -85,10 +86,61 @@ function TeamBadge({
   align,
   highlight,
 }: {
-  team?: { name: string; acronym: string | null; image_url: string | null };
+  team?: { id: number; name: string; acronym: string | null; image_url: string | null };
   align: "left" | "right";
   highlight: boolean;
 }) {
+  const nameEl = (
+    <span
+      className={cn(
+        "truncate text-xs font-semibold transition-colors",
+        highlight ? "text-emerald-400" : "text-muted-foreground"
+      )}
+    >
+      {team?.acronym ?? "TBD"}
+    </span>
+  );
+
+  const logoEl = (
+    <div className="team-logo-sm flex items-center justify-center bg-secondary/80 border border-border">
+      {team?.image_url ? (
+        <img
+          src={team.image_url}
+          alt=""
+          className="h-5 w-5 shrink-0 rounded object-contain"
+        />
+      ) : (
+        <span className="text-[9px] font-bold text-muted-foreground">
+          {team?.acronym?.[0] ?? "?"}
+        </span>
+      )}
+    </div>
+  );
+
+  const inner = (
+    <>
+      {align === "right" && nameEl}
+      {logoEl}
+      {align === "left" && nameEl}
+    </>
+  );
+
+  if (team) {
+    return (
+      <Link
+        to="/teams/$teamId"
+        params={{ teamId: String(team.id) }}
+        className={cn(
+          "flex min-w-0 flex-1 items-center gap-2.5 hover:opacity-80 transition-opacity",
+          align === "right" ? "justify-end" : "justify-start"
+        )}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {inner}
+      </Link>
+    );
+  }
+
   return (
     <div
       className={cn(
@@ -96,39 +148,7 @@ function TeamBadge({
         align === "right" ? "justify-end" : "justify-start"
       )}
     >
-      {align === "right" && (
-        <span
-          className={cn(
-            "truncate text-xs font-semibold transition-colors",
-            highlight ? "text-emerald-400" : "text-muted-foreground"
-          )}
-        >
-          {team?.acronym ?? "TBD"}
-        </span>
-      )}
-      <div className="team-logo-sm flex items-center justify-center bg-secondary/80 border border-border">
-        {team?.image_url ? (
-          <img
-            src={team.image_url}
-            alt=""
-            className="h-5 w-5 shrink-0 rounded object-contain"
-          />
-        ) : (
-          <span className="text-[9px] font-bold text-muted-foreground">
-            {team?.acronym?.[0] ?? "?"}
-          </span>
-        )}
-      </div>
-      {align === "left" && (
-        <span
-          className={cn(
-            "truncate text-xs font-semibold transition-colors",
-            highlight ? "text-emerald-400" : "text-muted-foreground"
-          )}
-        >
-          {team?.acronym ?? "TBD"}
-        </span>
-      )}
+      {inner}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import type { Match } from "@/lib/api";
+import { Link } from "@tanstack/react-router";
 import { formatShortDate, getMatchStatus, cn } from "@/lib/utils";
 
 export function MatchRow({ match }: { match: Match }) {
@@ -57,27 +58,39 @@ export function MatchRow({ match }: { match: Match }) {
 
       {/* Matchup */}
       <div className="flex flex-1 items-center justify-center gap-5">
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-3">
-          <span
-            className={cn(
-              "truncate text-sm font-bold",
-              isFinished && match.winner_id === team1?.id
-                ? "text-win"
-                : "text-muted-foreground",
-            )}
+        {team1 ? (
+          <Link
+            to="/teams/$teamId"
+            params={{ teamId: String(team1.id) }}
+            className="flex min-w-0 flex-1 items-center justify-end gap-3 hover:opacity-80 transition-opacity"
+            onClick={(e) => e.stopPropagation()}
           >
-            {team1?.acronym ?? "TBD"}
-          </span>
-          {team1?.image_url ? (
-            <img
-              src={team1.image_url}
-              alt=""
-              className="h-9 w-9 shrink-0 rounded-lg object-contain bg-secondary p-0.5"
-            />
-          ) : (
+            <span
+              className={cn(
+                "truncate text-sm font-bold hover:text-primary transition-colors",
+                isFinished && match.winner_id === team1.id
+                  ? "text-win"
+                  : "text-muted-foreground",
+              )}
+            >
+              {team1.acronym ?? "TBD"}
+            </span>
+            {team1.image_url ? (
+              <img
+                src={team1.image_url}
+                alt=""
+                className="h-9 w-9 shrink-0 rounded-lg object-contain bg-secondary p-0.5"
+              />
+            ) : (
+              <div className="h-9 w-9 shrink-0 rounded-lg bg-secondary" />
+            )}
+          </Link>
+        ) : (
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-3">
+            <span className="truncate text-sm font-bold text-muted-foreground">TBD</span>
             <div className="h-9 w-9 shrink-0 rounded-lg bg-secondary" />
-          )}
-        </div>
+          </div>
+        )}
 
         <div className="flex w-20 shrink-0 flex-col items-center">
           {isFinished || isLive ? (
@@ -94,27 +107,39 @@ export function MatchRow({ match }: { match: Match }) {
           </span>
         </div>
 
-        <div className="flex min-w-0 flex-1 items-center justify-start gap-3">
-          {team2?.image_url ? (
-            <img
-              src={team2.image_url}
-              alt=""
-              className="h-9 w-9 shrink-0 rounded-lg object-contain bg-secondary p-0.5"
-            />
-          ) : (
-            <div className="h-9 w-9 shrink-0 rounded-lg bg-secondary" />
-          )}
-          <span
-            className={cn(
-              "truncate text-sm font-bold",
-              isFinished && match.winner_id === team2?.id
-                ? "text-win"
-                : "text-muted-foreground",
-            )}
+        {team2 ? (
+          <Link
+            to="/teams/$teamId"
+            params={{ teamId: String(team2.id) }}
+            className="flex min-w-0 flex-1 items-center justify-start gap-3 hover:opacity-80 transition-opacity"
+            onClick={(e) => e.stopPropagation()}
           >
-            {team2?.acronym ?? "TBD"}
-          </span>
-        </div>
+            {team2.image_url ? (
+              <img
+                src={team2.image_url}
+                alt=""
+                className="h-9 w-9 shrink-0 rounded-lg object-contain bg-secondary p-0.5"
+              />
+            ) : (
+              <div className="h-9 w-9 shrink-0 rounded-lg bg-secondary" />
+            )}
+            <span
+              className={cn(
+                "truncate text-sm font-bold hover:text-primary transition-colors",
+                isFinished && match.winner_id === team2.id
+                  ? "text-win"
+                  : "text-muted-foreground",
+              )}
+            >
+              {team2.acronym ?? "TBD"}
+            </span>
+          </Link>
+        ) : (
+          <div className="flex min-w-0 flex-1 items-center justify-start gap-3">
+            <div className="h-9 w-9 shrink-0 rounded-lg bg-secondary" />
+            <span className="truncate text-sm font-bold text-muted-foreground">TBD</span>
+          </div>
+        )}
       </div>
     </div>
   );

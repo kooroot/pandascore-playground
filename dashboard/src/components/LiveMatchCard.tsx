@@ -1,4 +1,5 @@
 import type { Match } from "@/lib/api";
+import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { Play } from "lucide-react";
 
@@ -80,17 +81,17 @@ function TeamBlock({
   isWinner,
   align = "left",
 }: {
-  team?: { name: string; acronym: string | null; image_url: string | null };
+  team?: { id: number; name: string; acronym: string | null; image_url: string | null };
   isWinner: boolean;
   align?: "left" | "right";
 }) {
-  return (
-    <div className={cn("flex flex-1 flex-col gap-3 min-w-0", align === "right" ? "items-end" : "items-start")}>
+  const content = (
+    <>
       <div className="team-logo">
         {team?.image_url ? (
           <img
             src={team.image_url}
-            alt={team.name}
+            alt={team?.name}
             className="object-contain"
           />
         ) : (
@@ -110,6 +111,25 @@ function TeamBlock({
           {team?.name}
         </div>
       </div>
+    </>
+  );
+
+  if (team) {
+    return (
+      <Link
+        to="/teams/$teamId"
+        params={{ teamId: String(team.id) }}
+        className={cn("flex flex-1 flex-col gap-3 min-w-0 hover:opacity-80 transition-opacity", align === "right" ? "items-end" : "items-start")}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <div className={cn("flex flex-1 flex-col gap-3 min-w-0", align === "right" ? "items-end" : "items-start")}>
+      {content}
     </div>
   );
 }

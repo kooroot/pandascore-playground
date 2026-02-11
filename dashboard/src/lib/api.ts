@@ -20,6 +20,21 @@ export interface Team {
   location: string | null;
 }
 
+export interface Player {
+  id: number;
+  name: string;
+  first_name: string | null;
+  last_name: string | null;
+  role: string | null;
+  image_url: string | null;
+  nationality: string | null;
+  age: number | null;
+}
+
+export interface TeamDetail extends Team {
+  players: Player[];
+}
+
 export interface Opponent {
   opponent: Team;
   type: string;
@@ -145,6 +160,16 @@ export const api = {
     fetchApi<Team[]>("/lol/teams", {
       "page[size]": "50",
       "search[name]": query,
+    }),
+
+  getTeamById: (id: number) =>
+    fetchApi<TeamDetail>(`/lol/teams/${id}`),
+
+  getTeamMatches: (id: number) =>
+    fetchApi<Match[]>("/lol/matches/past", {
+      "filter[opponent_id]": String(id),
+      "page[size]": "10",
+      sort: "-begin_at",
     }),
 
   // Get active teams by extracting from recent/upcoming matches
